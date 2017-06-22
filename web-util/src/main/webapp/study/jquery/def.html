@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JQuery Def Study</title>
+<script type="text/javascript" src="../../widgets/jquery/jquery-3.2.1.js"></script>
+</head>
+<body>
+
+</body>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	testDefDone ();
+});
+
+function testDefDone () {
+	$.when(ajaxFunc()).done( function () {
+		alert( "wait for ajax!" );
+	});
+	
+	alert( "check point!" );
+}
+
+function ajaxFunc () {
+	var def = $.Deferred();
+	$.ajax({
+		success : function (data, textStatus, jqXHR) {
+			//setTimeout( function(){
+			//	alert( "ajax success!" );
+			//	def.resolve();
+			//},5000 );
+		},
+		error : function (XMLHttpRequest, textStatus, errorThrown) {
+			alert( "ajax error!" );
+		}
+	}).done( function () {
+		setTimeout( function(){
+			alert( "ajax success!" );
+			def.resolve();
+		},5000 );
+	});
+	
+	return def.promise();
+}
+</script>
+
+</html>
