@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!-- 
+Web的标准-结构（HTML），样式（CSS），行为（JS）的分离
+ -->
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Front-End Demo</title>
+
+<!-- 框架级的公用库（对应JSP可以建立mate.jsp，通过include引入） -->
+<script type="text/javascript" src="../../../widgets/jquery/jquery-3.2.1.js"></script>
+<link rel="stylesheet" href="../common/common.css"/>
+
+<!-- 页面个性的css，如果只涉及少量css，可以直接使用style引入，若数量多建议引入css文件 -->
+<link rel="stylesheet" href="demo.css"/>
+<style type="text/css">
+/* 少量css可以直接在html文件中通过style定义，不要使用内联样式 */
+</style>
+
+</head>
+
+<body>
+<!-- 
+语义化标签良好的网页，去掉css样式后，文档结构还是清晰可读的
+-->
+<div>
+	<h2>Web的标准-结构，样式，行为的分离</h2>
+	<ul>
+		<li>结构:XML标准、XHTML标准、HTML标准</li>
+		<li>样式:CSS标准</li>
+		<li>行为:DOM标准、ECMAScript标准</li>
+	</ul>
+	<p>理想状态下，网页源代码有三部分组成：.html文件、.css文件、.js文件。标签中混有样式和行为的写法是不推荐的。</p>
+</div>
+<div>
+	<h2>高质量的HTML</h2>
+	<p>HTML是语义化的标签，语义化标签良好的网页，去掉css样式后，文档结构还是清晰可读的。<a href="http://www.w3school.com.cn/">可参w3c网站</a></p>
+</div>
+<div id="cssContent">
+	<h2>高质量的CSS</h2>
+	<h3>推荐一种CSS的组织方法:base.css+common.css+page.css，三者者不是并列结构，而且层叠结构</h3>
+	<ul>
+		<li>base层:提供CSS reset功能和力度最小的通用类，具有高度可移植性-原子级</li>
+		<li>common层:组件级的css类，不同的网站有不同的风格-网站级</li>
+		<li>page层:每个页面都有可能有自己的css，跟其他页面不公用的-页面级</li>
+	</ul>
+</div>
+<div>
+	<h2>高质量的JavaScript</h2>
+	<h3>JavaScriptde分层与CSS类似，也可以按base、common、page划分</h3>
+	<ul>
+		<li>base层:封装浏览器差异，提供统一接口</li>
+		<li>common层:可复用的组件</li>
+		<li>page层:页面具体脚本</li>
+	</ul>
+</div>
+<div class="greenFont">
+	<h4>参考：《Web前端开发修炼之道》</h4>
+</div>
+</body>
+
+<!-- 对应页面具体的js引入，放在body后面是因为浏览器加载html是按书写顺序加载，
+	如果都放头部，用户等待感觉会加长，但是要防止对应的js里的方法在加载前就被调用。
+	与css对比，如果先加载html再加载css样式，加载html时没有样式渲染，等css加载完又重新渲染，
+	若先加载样式，在加载html标签时，对应的样式就能被浏览器直接渲染。 -->
+<script type="text/javascript" src="demo.js"></script>
+<script type="text/javascript">
+/* 少量js可以直接在html文件中通过script定义 */
+</script>
+</html>
