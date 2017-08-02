@@ -7,7 +7,7 @@
 		<groupId>team.kc.utils</groupId>
 		<artifactId>util-parent</artifactId>
 		<relativePath>../util-parent/</relativePath>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1</version>
 	</parent>
 	<artifactId>sqlt-util</artifactId>
 	<packaging>jar</packaging>
@@ -17,6 +17,20 @@
 	</properties>
 	
 	<dependencies>
+		<!-- common util -->
+		<dependency>
+		    <groupId>team.kc.utils</groupId>
+		    <artifactId>common-util</artifactId>
+		    <version>0.0.1</version>
+		</dependency>
+		
+		<!-- JPA -->
+		<dependency>
+		    <groupId>org.apache.geronimo.specs</groupId>
+		    <artifactId>geronimo-jpa_3.0_spec</artifactId>
+		    <version>1.1.1</version>
+		</dependency>
+		
 		<!-- Template Language  -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
@@ -42,6 +56,10 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-beanutils</artifactId>
 		</dependency>
 		
 		<!-- Dom4j -->

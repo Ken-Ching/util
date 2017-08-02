@@ -1,7 +1,10 @@
 /**
  * Extend JQuery QR code for logo
+ * <br>
  * Add logo parameter in option like below:
  * logo : {width:50px; height:50px; src: "./logo.png"}
+ * <br>
+ * Add render type for image to convert the QR code to image.
  */
 var QR_LOGO_DEFALT = {
 	WIDTH : 50,
@@ -12,6 +15,14 @@ var QR_LOGO_DEFALT = {
 	$.fn.qrcodeWithLogo = function(options) {
 		
 		return this.each(function(){
+			
+			//If render is image, generate canvas first
+			var toImage = false;
+			if (options.render == "image") {
+				options.render = "canvas";
+				toImage = true;
+			}
+			
 			$(this).qrcode(options);
 			$(this).css("position", "relative");
 			
@@ -19,20 +30,29 @@ var QR_LOGO_DEFALT = {
 				var logo = options.logo;
 				var isCanvas = (options.render == "canvas");
 				var $qrcodeE = $(this).find( isCanvas ? "canvas" : "table");
-				var qrcodeWidth = $qrcodeE.css("width").replace("px","");
-				var qrcodeHeight = $qrcodeE.css("height").replace("px","");
 				var logoWidth = logo.width ? logo.width : QR_LOGO_DEFALT.WIDTH;
 				var logoHeight = logo.height ? logo.height : QR_LOGO_DEFALT.HEIGHT;
-				var logoTop = (qrcodeHeight - logoHeight) / 2;
-				var logoLeft = (qrcodeWidth - logoWidth) / 2;
+				var logoTop = (options.height - logoHeight) / 2;
+				var logoLeft = (options.width - logoWidth) / 2;
 				
 				if (isCanvas) {
 					var ctx = $qrcodeE[0].getContext("2d");
 					
-					var img = new Image();
-					img.src = logo.src;
-					img.onload = function(){//图片具有lazy loading，需要加载完才能画
-						ctx.drawImage(img, logoLeft,logoTop,logoWidth,logoHeight);
+					var logImg = new Image();
+					logImg.src = logo.src;
+					$qrCodeDiv = $(this);//引用传递给image onload
+					logImg.onload = function(){//图片具有lazy loading，需要加载完才能画
+						ctx.drawImage(logImg, logoLeft,logoTop,logoWidth,logoHeight);
+						
+						if (toImage) {
+							var qrCodeImg = new Image();
+							qrCodeImg.src = $qrcodeE[0].toDataURL("image/png");
+							$qrCodeDiv.empty().append(qrCodeImg);
+							
+						}
+						
+						//process callback
+						if (options.onload) { options.onload(); }
 					}
 				} else {
 					var qrCodePosition = $qrcodeE.position();//增加table偏移量
@@ -44,6 +64,9 @@ var QR_LOGO_DEFALT = {
 						.css("left", (qrCodePosition.left+logoLeft)+"px")
 						.prop("src", logo.src);
 					$logoDiv.appendTo(this);
+					
+					//process callback
+					if (options.onload) { options.onload(); }
 				}
 			}
 		});

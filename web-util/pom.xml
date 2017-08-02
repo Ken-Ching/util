@@ -7,7 +7,7 @@
 		<groupId>team.kc.utils</groupId>
 		<artifactId>util-parent</artifactId>
 		<relativePath>../util-parent/</relativePath>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1</version>
 	</parent>
 	<artifactId>web-util</artifactId>
 	<packaging>war</packaging>

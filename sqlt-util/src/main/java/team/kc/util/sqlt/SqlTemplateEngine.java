@@ -5,7 +5,6 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.collections4.map.LazyMap;
@@ -20,44 +19,57 @@ import org.slf4j.LoggerFactory;
 
 import team.kc.util.convertor.TypeConvertor;
 import team.kc.util.file.WildCardFilter;
+import team.kc.util.propertites.PropertiesHolder;
 import team.kc.util.sqlt.exception.SqlTemplateInitException;
 import team.kc.util.sqlt.exception.SqlTemplateParseException;
 import team.kc.util.velocity.VelocityEngineUtils;
 
 public class SqlTemplateEngine {
-	private static final Logger logger = LoggerFactory.getLogger(SqlTemplateEngine.class);
+	protected static final Logger logger = LoggerFactory.getLogger(SqlTemplateEngine.class);
 
-	public static String JPQL_TYPE = "jpql";
-	public static String SQL_TYPE = "sql";
+	public static final String JPQL_TYPE = "jpql";
+	public static final String SQL_TYPE = "sql";
 	/** Template element, this element contains the sql/jpql template*/
-	private static String TEMPLATE_E = "template";
-	private static String NAMESPACE_ATTRIBUTE= "namespace";
+	private static final String TEMPLATE_E = "template";
+	private static final String NAMESPACE_ATTRIBUTE= "namespace";
+	
+	private static volatile boolean initialized = false;
+	private static Object mutex = new Object();
+	private static SqlTemplateEngine instance;
+	
+	public static SqlTemplateEngine getInstance () throws SqlTemplateInitException {
+		if (initialized) { return instance; }
+		
+		synchronized (mutex) {
+			String sqltFolder = PropertiesHolder.getProperty("sqlt", "sqltFolder");
+			if (StringUtils.isBlank(sqltFolder)) { sqltFolder = getDefaultSqltFolder(); }
+			
+			instance = new SqlTemplateEngine(sqltFolder);
+			initialized = true;
 
-	private Map<String, String> jpqlCache;
-	private Map<String, String> sqlCache;
-
-	public Map<String, String> getJpqlcache () {
-		return sqlCache;
-	}
-
-	public Map<String, String> getSqlcache () {
-		return sqlCache;
+			return instance;
+		}
+		
 	}
 	
-	private static String getCacheKey (String namespace, String templateId) {
+	private static String getDefaultSqltFolder () {
+		return SqlTemplateEngine.class.getResource("/").getPath()+"sqlt/";
+	}
+	
+	private Map<String, String> jpqlCache;
+	private Map<String, String> sqlCache;
+	
+	protected static String getCacheKey (String namespace, String templateId) {
 		return namespace + "_" + templateId;
 	}
 	
-	public SqlTemplateEngine(String sqltFolder) throws SqlTemplateInitException {
-		this(sqltFolder, false);
-	}
-
-	public SqlTemplateEngine(String sqltFolder, boolean debugMode) throws SqlTemplateInitException {
+	protected SqlTemplateEngine(String sqltFolder) throws SqlTemplateInitException {
 		logger.info("Initiating SqlTemplateEngine.");
 		File dir = new File(sqltFolder);
 		logger.debug("SQL template folder:{}", sqltFolder);
 		if (dir.isDirectory()) {
 			File[] files = dir.listFiles(new WildCardFilter("sqlt-*.xml"));
+			boolean debugMode = Boolean.valueOf(PropertiesHolder.getProperty("sqlt", "debugMode"));
 
 			if (debugMode) {
 				logger.debug("getting sqlt in debug mode.");
@@ -95,7 +107,6 @@ public class SqlTemplateEngine {
 		}
 
 		logger.info("SqlTemplateEngine initialization completed.");
-
 	}
 
 	/**
@@ -205,49 +216,26 @@ public class SqlTemplateEngine {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("criteria", criteria);
 		model.put("util", new SqltUtil());
-		String nativeSqlTemplate = getSqlTemplate(namespace, sqltId);
-		if (StringUtils.isBlank(nativeSqlTemplate)) {
+		String sqlTemplate = getSqlTemplate(namespace, sqltId);
+		if (StringUtils.isBlank(sqlTemplate)) {
 			throw new SqlTemplateParseException(
 					"Sqlt-SQL named " + sqltId + " is not found under namespace " + namespace + " .");
 		}
-		return mergeStringTemplateIntoString(nativeSqlTemplate, model);
+		return mergeStringTemplateIntoString(sqlTemplate, model);
 	}
 
 	public String getJpqlTemplate (String namespace, String templateId) {
 		if (logger.isTraceEnabled()) {
 			logger.trace("getting sqlt: {}", templateId);
 		}
-		return getJpqlcache().get( getCacheKey(namespace, templateId) );
+		return this.jpqlCache.get( getCacheKey(namespace, templateId) );
 	}
 
 	public String getSqlTemplate (String namespace, String templateId) {
 		if (logger.isTraceEnabled()) {
 			logger.trace("getting sqlt: {}", templateId);
 		}
-		return getSqlcache().get( getCacheKey(namespace, templateId) );
+		return this.sqlCache.get( getCacheKey(namespace, templateId) );
 	}
-
-	public static final void main (String[] args) throws Exception {
-		String sqltFolder = "D:/Trainning/Project-InfoPublish/source/kc-util/src/main/resources/sqlTemplate";
-		SqlTemplateEngine engine = new SqlTemplateEngine(sqltFolder);
-
-		for (Entry<String, String> entry : engine.getSqlcache().entrySet()) {
-			String key = entry.getKey();
-			String stringTemplate = entry.getValue();
-			logger.trace(" {}: {}", key, stringTemplate);
-			Map<String, Object> model = new HashMap<String, Object>();
-			model.put("util", new SqltUtil());
-			
-			//
-			String out = engine.mergeStringTemplateIntoString(stringTemplate, model);
-			//
-			logger.debug(out);
-		}
-		
-
-		Map<String, Object> criteria = new HashMap<String, Object>();
-		criteria.put("locType", "LINE");
-		logger.debug(engine.getSql("demo", "template1", criteria));
-
-	}
+	
 }

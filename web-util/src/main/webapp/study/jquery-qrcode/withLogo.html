@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>JQuery-QR code</title>
 <script type="text/javascript" src="../../widgets/jquery/jquery-3.2.1.js"></script>
+<script type="text/javascript" src="../../widgets/common/base64.js"></script>
+<script type="text/javascript" src="../../widgets/common/canvas2image.js"></script>
 <script type="text/javascript" src="../../widgets/jquery-qrcode/qrcode.js"></script>
 <script type="text/javascript" src="../../widgets/jquery-qrcode/jquery.qrcode.js"></script>
 <script type="text/javascript" src="../../widgets/jquery-qrcode/jquery.qrcode.logo.js"></script>
@@ -15,10 +17,9 @@
 </head>
 <body>
 	<div id="qrCode"></div>
-	<div id="qrCodeWithLogo1"></div>
-	<div id="qrCodeWithLogo2">
-			
-	</div>
+	<div id="qrCodeWithLogoTable"></div>
+	<div id="qrCodeWithLogoCanvas"></div>
+	<div id="qrCodeWithLogoImage"></div>
 	
 </body>
 
@@ -28,23 +29,39 @@ $(document).ready(function(){
 });
 
 function testGenLogoQR () {
+	
+	
 	$("#qrCode").qrcodeWithLogo({ 
-		render: "canvas", //table方式 
+	    render: "table", //table方式 
 	    width: 200, //宽度 
 	    height:200, //高度 
 	    text: "http://www.baidu.com" //任意内容
 	});
 	
-	$("#qrCodeWithLogo1").qrcodeWithLogo({ 
-		render: "table", //table方式 
+	
+	$("#qrCodeWithLogoTable").qrcodeWithLogo({ 
+	    render: "table", //table方式 
 	    width: 200, //宽度 
 	    height:200, //高度 
 	    text: "http://www.baidu.com", //任意内容
 	    logo: {src:"./logo.png"}
 	});
 	
-	$("#qrCodeWithLogo2").qrcodeWithLogo({ 
+	
+	$("#qrCodeWithLogoCanvas").qrcodeWithLogo({ 
 	    render: "canvas", //table方式 
+	    width: 200, //宽度 
+	    height:200, //高度 
+	    text: "http://www.baidu.com", //任意内容
+	    logo: {src:"./logo.png"},
+	    onload : function () {
+	    	alert("canvas loaded!");
+	    }
+	});
+	
+	
+	$("#qrCodeWithLogoImage").qrcodeWithLogo({ 
+	    render: "image", //table方式 
 	    width: 200, //宽度 
 	    height:200, //高度 
 	    text: "http://www.baidu.com", //任意内容
