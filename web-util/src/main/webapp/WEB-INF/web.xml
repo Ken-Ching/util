@@ -3,5 +3,14 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Archetype Created Web Application</display-name>
+	<display-name>Archetype Created Web Application</display-name>
+
+	<servlet>
+		<servlet-name>ImageShowServlet</servlet-name>
+		<servlet-class>team.kc.ie8.ImageShowServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ImageShowServlet</servlet-name>
+		<url-pattern>/imageShowServlet</url-pattern>
+	</servlet-mapping>
 </web-app>

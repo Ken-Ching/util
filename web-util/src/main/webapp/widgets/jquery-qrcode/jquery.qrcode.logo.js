@@ -8,7 +8,7 @@
  */
 var QR_LOGO_DEFALT = {
 	WIDTH : 50,
-	HEIGHT : 50,
+	HEIGHT : 50
 };
 
 (function( $ ){
@@ -32,8 +32,8 @@ var QR_LOGO_DEFALT = {
 				var $qrcodeE = $(this).find( isCanvas ? "canvas" : "table");
 				var logoWidth = logo.width ? logo.width : QR_LOGO_DEFALT.WIDTH;
 				var logoHeight = logo.height ? logo.height : QR_LOGO_DEFALT.HEIGHT;
-				var logoTop = (options.height - logoHeight) / 2;
-				var logoLeft = (options.width - logoWidth) / 2;
+				var logoTop = ($qrcodeE.height() - logoHeight) / 2;
+				var logoLeft = ($qrcodeE.width() - logoWidth) / 2;
 				
 				if (isCanvas) {
 					var ctx = $qrcodeE[0].getContext("2d");
@@ -55,6 +55,14 @@ var QR_LOGO_DEFALT = {
 						if (options.onload) { options.onload(); }
 					}
 				} else {
+					//对于二维码缩放过的，logo也跟着缩放,重新定位
+					if (options.width && $qrcodeE.width() != options.width) {
+						logoWidth = logoWidth * $qrcodeE.width() / options.width;
+						logoHeight = logoHeight * $qrcodeE.height() / options.height;
+						var logoTop = ($qrcodeE.height() - logoHeight) / 2;
+						var logoLeft = ($qrcodeE.width() - logoWidth) / 2;
+					}
+					
 					var qrCodePosition = $qrcodeE.position();//增加table偏移量
 					var $logoDiv = $("<img></img>")
 						.css("position", "absolute")

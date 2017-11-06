@@ -52,6 +52,13 @@
 			var qrcode	= new QRCode(options.typeNumber, options.correctLevel);
 			qrcode.addData(options.text);
 			qrcode.make();
+			  
+			// compute tileS percentage
+			var tileW	= Math.floor(options.width / qrcode.getModuleCount());
+			var tileH	= Math.floor(options.height / qrcode.getModuleCount());
+			
+			options.width = tileW * qrcode.getModuleCount();
+			options.height = tileH * qrcode.getModuleCount();
 			
 			// create table element
 			var $table	= $('<table></table>')
@@ -60,10 +67,6 @@
 				.css("border", "0px")
 				.css("border-collapse", "collapse")
 				.css('background-color', options.background);
-		  
-			// compute tileS percentage
-			var tileW	= options.width / qrcode.getModuleCount();
-			var tileH	= options.height / qrcode.getModuleCount();
 
 			// draw in the table
 			for(var row = 0; row < qrcode.getModuleCount(); row++ ){
@@ -72,10 +75,12 @@
 				for(var col = 0; col < qrcode.getModuleCount(); col++ ){
 					$('<td></td>')
 						.css('width', tileW+"px")
+						.css('padding', "0")
 						.css('background-color', qrcode.isDark(row, col) ? options.foreground : options.background)
 						.appendTo($row);
-				}	
+				}
 			}
+			
 			// return just built canvas
 			return $table;
 		}
